@@ -27,10 +27,7 @@ public class SellerDaoJDBC implements SellerDao {
         PreparedStatement statement = null;
         
         try {
-            statement = connection.prepareStatement("INSERT INTO seller " +
-                    "(Name, Email, BirthDate, BaseSalary, DepartmentId) " +
-                    "VALUES " +
-                    "(?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            statement = connection.prepareStatement("INSERT INTO seller " + "(Name, Email, BirthDate, BaseSalary, DepartmentId) " + "VALUES " + "(?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             
             statement.setString(1, seller.getName());
             statement.setString(2, seller.getEmail());
@@ -63,7 +60,25 @@ public class SellerDaoJDBC implements SellerDao {
     
     @Override
     public void update(Seller seller) {
-    
+        PreparedStatement statement = null;
+        
+        try {
+            statement = connection.prepareStatement("UPDATE seller SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? WHERE Id = ?", Statement.RETURN_GENERATED_KEYS);
+            
+            statement.setString(1, seller.getName());
+            statement.setString(2, seller.getEmail());
+            statement.setDate(3, new java.sql.Date(seller.getBirthDate().getTime()));
+            statement.setDouble(4, seller.getBaseSaraly());
+            statement.setInt(5, seller.getDepartment().getId());
+            statement.setInt(6, seller.getId());
+            
+            statement.executeUpdate();
+            
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatements(statement);
+        }
     }
     
     @Override
